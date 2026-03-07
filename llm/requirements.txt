@@ -1,0 +1,12 @@
+requests
+pdfplumber
+reportlab
+
+torch
+transformers
+scikit-learn
+numpy
+pandas
+psycopg2
+ollama
+flask

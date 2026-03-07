@@ -1,0 +1,76 @@
+AMRUT / KOZHIKODE MASTER PLAN – RELEVANT EXTRACT (VOLUME 3)
+
+CITY DEVELOPMENT OBJECTIVE:
+All developments in Kozhikode City shall conform to the Master Plan 2040 and Development Regulations issued by the Local Self Government Department.
+
+--------------------------------
+ROADS & TRANSPORT INFRASTRUCTURE
+--------------------------------
+Major arterial roads and widening projects are approved under the Master Plan.
+Key roads include:
+- Mavoor Road (Proposed width: 30m)
+- Kannur Road (24m)
+- Madras Road (24m)
+- Wayanad Road (30m)
+- Francis Road – Methottuthazham Road
+- Coastal Road I & II
+- Meenchantha – Beypore Road
+
+Road widening, resurfacing, drainage correction, and safety improvements are permitted.
+Construction within road widening zones is restricted.
+Road safety, visibility, pedestrian access, and drainage are priority considerations.
+
+--------------------------------
+DRAINAGE, CANALS & FLOOD MITIGATION
+--------------------------------
+Construction is restricted near:
+- Rivers: Chaliyar, Kallai, Korapuzha, Feroke River
+- Cannoli Canal and natural drains
+
+Minimum buffer distances are mandated from canals and drains.
+Flood mitigation and disaster management projects are permitted in all zones.
+Blocked drains, waterlogging, and flood risks fall under disaster mitigation and public safety.
+
+--------------------------------
+SOLID WASTE MANAGEMENT
+--------------------------------
+Solid waste treatment plants are permitted under:
+- Special Zone B (Garbage Treatment Plant)
+
+Waste management units, garbage treatment, and public utility structures are permitted uses in most zones.
+Uncontrolled dumping and garbage accumulation pose public health risks.
+
+--------------------------------
+RISK AREAS & PUBLIC SAFETY
+--------------------------------
+High-risk and medium-risk zones require:
+- Elevated plinth levels
+- Disaster mitigation measures
+- Structural safety compliance
+
+Public safety issues such as road damage, flooding, traffic obstruction, and sanitation hazards are considered high priority.
+
+--------------------------------
+PUBLIC UTILITIES & ESSENTIAL SERVICES
+--------------------------------
+Permitted in all zones:
+- Water supply infrastructure
+- Sewerage systems
+- Drainage correction
+- Waste management units
+- Public utility buildings
+
+Emergency repair works are allowed irrespective of zoning.
+
+--------------------------------
+ALIGNMENT LOGIC FOR DECISION SYSTEM
+--------------------------------
+If a citizen complaint involves:
+- Road damage → aligns with Road Development & Transport Infrastructure
+- Drain blockage / flooding → aligns with Drainage & Disaster Mitigation
+- Garbage accumulation → aligns with Solid Waste Management
+- Traffic obstruction / safety hazard → aligns with Public Safety & Transport
+- Water stagnation / health risk → aligns with Public Health & Infrastructure
+
+Such complaints should be marked as:
+"Aligned with AMRUT / Kozhikode Master Plan objectives"

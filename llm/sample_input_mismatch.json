@@ -1,0 +1,9 @@
+{
+  "description": "There is a huge garbage pile near the government school causing bad smell and health issues for children.",
+  "text_label": "garbage",
+  "image_label": "garbage",
+  "sentiment": "Negative",
+  "severity_score": 0.88,
+  "upvotes": 57,
+  "location": "Kallai Road, Kozhikode"
+}

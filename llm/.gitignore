@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# ML models
+*.pth
+*.pt
+*.pkl
+*.h5
+
+# Environment variables
+.env
+
+# output folders
+results/
+reports/
+
+# OS files
+.DS_Store

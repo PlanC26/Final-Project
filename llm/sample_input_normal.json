@@ -1,0 +1,9 @@
+{
+  "description": "A deep pothole has formed on the main road near the bus stop, causing frequent traffic jams and accidents.",
+  "text_label": "pothole",
+  "image_label": "pothole",
+  "sentiment": "Negative",
+  "severity_score": 0.91,
+  "upvotes": 102,
+  "location": "Mavoor Road, Kozhikode"
+}
