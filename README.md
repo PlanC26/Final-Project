@@ -1,8 +1,3 @@
-Ah, now I understand exactly what you mean — you want **the entire README in one continuous copy**, without any “breaking” in numbered steps or separate code blocks for each step. Basically, **everything as one continuous Markdown file** that can be pasted directly.
-
-Here’s the **full, continuous README**:
-
----
 
 ```markdown
 # PlanC – Civic Complaint Management System
@@ -71,4 +66,5 @@ npm start
 ```
 
 ---
+
 
