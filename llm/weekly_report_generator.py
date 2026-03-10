@@ -1,10 +1,11 @@
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, LongTable
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
 from reportlab.lib import colors
 from datetime import datetime
 import matplotlib.pyplot as plt
 import io
+from collections import Counter
 
 def generate_weekly_report(ranked_issues, output_path):
     # PDF setup
@@ -46,14 +47,24 @@ def generate_weekly_report(ranked_issues, output_path):
     for issue in ranked_issues[:5]:
         inp = issue["input"]
         dec = issue["decision"]
+
+        severity = inp.get("severity_score", 0)
+        if severity >= 0.7:
+            severity_label = "Critical"
+        elif severity >= 0.4:
+            severity_label = "Moderate"
+        else:
+            severity_label = "Minor"
+
         text = f"""
         <b>Location:</b> {inp['location']}<br/>
         <b>Issue:</b> {inp['description']}<br/>
-        <b>Severity Score:</b> {inp.get('severity_score', 'N/A')}<br/>
+        <b>Severity Score:</b> {severity} ({severity_label})<br/>
         <b>Priority:</b> {dec['priority']}<br/>
         <b>Recommended Action:</b> {dec['recommended_action']}<br/>
         <b>Citizen Engagement:</b> {inp.get('upvotes', 0)} upvotes.<br/><br/>
         """
+        
         elements.append(Paragraph(text, styles["body"]))
         elements.append(Spacer(1, 10))
 
@@ -64,6 +75,7 @@ def generate_weekly_report(ranked_issues, output_path):
 
     label_to_category = {cat: cat.replace("_", " ") for cat in category_list}
     summary_data = {}
+    all_short_locs = []  # Collect all short locations here for bar chart
 
     for issue in ranked_issues:
         raw_label = issue["input"].get("text_label", "").lower()
@@ -81,7 +93,10 @@ def generate_weekly_report(ranked_issues, output_path):
         cat_name = cat.replace("_", " ")
         if cat_name in summary_data:
             locs = summary_data[cat_name]["locations"]
-            top_locs = ", ".join(locs[:3]) + ("…" if len(locs) > 3 else "")
+            short_locs = [loc.split(",")[0].strip() for loc in locs]
+            all_short_locs.extend(short_locs)  # collect for bar chart
+
+            top_locs = ", ".join(short_locs)
             table_data.append([
                 cat_name.title(),
                 str(summary_data[cat_name]["count"]),
@@ -91,18 +106,19 @@ def generate_weekly_report(ranked_issues, output_path):
 
     # Table with borders
     if len(table_data) > 1:
-        table = Table(table_data, hAlign="LEFT", colWidths=[90, 40, 280, 90])
+        table = LongTable(table_data, colWidths=[85, 35, 290, 90], repeatRows=1)
         table.setStyle(TableStyle([
             ('GRID', (0,0), (-1,-1), 1, colors.black),
             ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-            ('ALIGN',(1,1),(-1,-1),'CENTER'),
+            ('ALIGN',(1,0),(-1,-1),'CENTER'),
             ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-            ('FONTSIZE', (0,0), (-1,-1), 11)
+            ('FONTSIZE', (0,0),(-1,-1), 11),
+            ('WORDWRAP', (2,1), (2,-1), 'CJK')
         ]))
         elements.append(table)
         elements.append(Spacer(1,20))
 
-    # Generate pie chart: Category vs Count
+    # Pie chart: Category vs Count
     categories = [row[0] for row in table_data[1:]]
     counts = [int(row[1]) for row in table_data[1:]]
     if categories:
@@ -111,36 +127,6 @@ def generate_weekly_report(ranked_issues, output_path):
         plt.title("Complaint Distribution by Category")
         plt.tight_layout()
 
-        # Save to buffer
-        buf = io.BytesIO()
-        plt.savefig(buf, format='PNG')
-        plt.close()
-        buf.seek(0)
-        img = Image(buf)
-        img.drawHeight = 200  # adjust height if needed
-        img.drawWidth = 400   # adjust width if needed
-        elements.append(img)
-        elements.append(Spacer(1,20))
-
-        # Build PDF
-        
-
-        from collections import Counter
-    all_locations = [loc for cat in summary_data.values() for loc in cat["locations"]]
-    top_locations = Counter(all_locations).most_common(5)
-
-    if top_locations:
-        loc_names, loc_counts = zip(*top_locations)
-        loc_counts = [int(c) for c in loc_counts]  # ensure integer counts
-
-        plt.figure(figsize=(5,4))
-        plt.barh(loc_names, loc_counts, color='mediumseagreen')
-        plt.xlabel("Number of Complaints")
-        plt.title("Top Locations with Most Complaints")
-        plt.xticks(range(0, max(loc_counts)+5))
-        plt.tight_layout()
-
-        # Save horizontal bar chart to buffer and add to PDF
         buf = io.BytesIO()
         plt.savefig(buf, format='PNG')
         plt.close()
@@ -151,4 +137,27 @@ def generate_weekly_report(ranked_issues, output_path):
         elements.append(img)
         elements.append(Spacer(1,20))
 
-        doc.build(elements)
+    # Horizontal bar chart: Top Locations from table only
+    top_locations = Counter(all_short_locs).most_common(5)
+    if top_locations:
+        loc_names, loc_counts = zip(*top_locations)
+        loc_counts = [int(c) for c in loc_counts]
+
+        plt.figure(figsize=(5,4))
+        plt.barh(loc_names, loc_counts, color='mediumseagreen')
+        plt.xlabel("Number of Complaints")
+        plt.title("Top Locations (from table)")
+        plt.xticks(range(0, max(loc_counts)+5))
+        plt.tight_layout()
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='PNG')
+        plt.close()
+        buf.seek(0)
+        img = Image(buf)
+        img.drawHeight = 200
+        img.drawWidth = 400
+        elements.append(img)
+        elements.append(Spacer(1,20))
+
+    doc.build(elements)
