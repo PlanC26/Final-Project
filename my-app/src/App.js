@@ -20,12 +20,13 @@ export default function App() {
   }
 }, []);
 
+
   React.useEffect(() => {
   fetch("http://localhost:5001/api/posts")
     .then(res => res.json())
     .then(data => {
       setComplaints(data);
-
+      setFilteredComplaints(data);
       const userData = JSON.parse(localStorage.getItem("user"));
 
       if (userData) {
@@ -49,6 +50,9 @@ export default function App() {
   const [activeCommentPost, setActiveCommentPost] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editedDescription, setEditedDescription] = useState("");
+  const [filteredComplaints, setFilteredComplaints] = useState([]);
+  const [sortType, setSortType] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
 // Fetch My Complaints (only when user exists and page is mycomplaints)
 
 const handleReport = async (reportedUserId, reason) => {
@@ -207,6 +211,39 @@ const handleAddComment = async (postId) => {
     console.error("Add comment error:", err);
   }
 };  
+const applyFilters = () => {
+  let temp = [...complaints];
+
+  // Filter by location
+  if (locationFilter !== "") {
+    temp = temp.filter(c =>
+      c.location?.toLowerCase().includes(locationFilter.toLowerCase())
+    );
+  }
+
+  // Sort by likes
+  if (sortType === "likes-high") {
+    temp.sort((a, b) => b.noofupvotes - a.noofupvotes);
+  }
+
+  if (sortType === "likes-low") {
+    temp.sort((a, b) => a.noofupvotes - b.noofupvotes);
+  }
+
+  // Sort by date
+  if (sortType === "date-new") {
+    temp.sort((a, b) => new Date(b.createdate) - new Date(a.createdate));
+  }
+
+  if (sortType === "date-old") {
+    temp.sort((a, b) => new Date(a.createdate) - new Date(b.createdate));
+  }
+
+  setFilteredComplaints(temp);
+};
+React.useEffect(() => {
+  applyFilters();
+}, [sortType, locationFilter, complaints]);
 
   return (
     <div className="font-sans bg-[#F4FFFF] min-h-screen flex flex-col">
@@ -366,10 +403,33 @@ const handleAddComment = async (postId) => {
               className="hover:underline font-bold">View my Complaints</button>
             </div>
           </div>
+<div className="flex gap-4 mb-6">
 
+<input
+  type="text"
+  placeholder="Filter by location"
+  className="border px-3 py-1 rounded"
+  value={locationFilter}
+  onChange={(e) => setLocationFilter(e.target.value)}
+/>
+
+<select
+  className="border px-3 py-1 rounded"
+  value={sortType}
+  onChange={(e) => setSortType(e.target.value)}
+>
+  <option value="">Sort</option>
+  <option value="likes-high">Most liked</option>
+  <option value="likes-low">Least liked</option>
+  <option value="date-new">Newest</option>
+  <option value="date-old">Oldest</option>
+</select>
+
+</div>
           {/* Complaints grid */}
 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-  {complaints.map((c) => (
+  {/*{complaints.map((c) => (*/}
+  {filteredComplaints.map((c) => (
     <div
       key={c.post_id}
       className="bg-white rounded-xl shadow-md hover:shadow-lg transition duration-300 overflow-hidden flex flex-col"
@@ -533,6 +593,8 @@ const handleAddComment = async (postId) => {
     <p className="text-sm font-bold">LOCATION: {c.location}</p>
     <p className="text-sm font-bold">COMPLAINT: {c.title}</p>
     <p className="text-sm">STATUS: {c.status}</p>
+
+
 
     {/* DESCRIPTION EDIT SECTION */}
     <div className="mt-2">
