@@ -15,7 +15,7 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "plancgeck@gmail.com",
+    user: "plancnm26@gmail.com",
     pass: "xxx"   
   }
 });
@@ -654,13 +654,39 @@ app.post('/api/report-user', async (req, res) => {
       return res.status(400).json({ message: 'You already reported this user' });
     }
 
+    // Insert report
     await pool.query(
       `INSERT INTO reports (reported_user_id, reported_by, reason)
        VALUES ($1, $2, $3)`,
       [reportedUserId, reportedBy, reason]
     );
 
-    res.json({ message: 'Report submitted successfully' });
+    /* ================= AUTO DISABLE CHECK ================= */
+
+    const reportCountResult = await pool.query(
+      `SELECT COUNT(*) FROM reports WHERE reported_user_id = $1`,
+      [reportedUserId]
+    );
+
+    const reportCount = parseInt(reportCountResult.rows[0].count);
+
+    if (reportCount >= 1) {
+
+      // Only auto-disable if admin has not overridden
+      await pool.query(
+        `UPDATE "User"
+         SET disabled = TRUE
+         WHERE userid = $1
+         AND manual_override = FALSE`,
+        [reportedUserId]
+      );
+
+    }
+
+    res.json({
+      message: 'Report submitted successfully',
+      reportCount
+    });
 
   } catch (error) {
     console.error('Report error:', error);
@@ -672,17 +698,20 @@ app.post('/api/report-user', async (req, res) => {
 app.get('/api/reported-users', async (req, res) => {
   try {
     const result = await pool.query(`
-  SELECT 
+      SELECT 
         r.reported_user_id,
         COUNT(*) AS total_reports,
-        u.disabled
+        u.disabled,
+        u.manual_override
       FROM reports r
       JOIN "User" u ON u.userid = r.reported_user_id
-      GROUP BY r.reported_user_id, u.disabled
+      GROUP BY r.reported_user_id, u.disabled, u.manual_override
       ORDER BY total_reports DESC
     `);
 
+
     res.json(result.rows);
+
   } catch (err) {
     console.error("Fetch reported users error:", err);
     res.status(500).json({ message: "Server error" });
@@ -705,7 +734,7 @@ app.post("/api/send-weekly-report", async (req, res) => {
     const pdfBuffer = result.rows[0].report_file;
 
     await transporter.sendMail({
-      from: "plancgeck@gmail.com",
+      from: "plancnm26@gmail.com",
       to: "braiviks@gmail.com",
       subject: "Weekly Report",
       text: "Please find the weekly report attached.",
@@ -764,6 +793,28 @@ app.put('/api/posts/:id', async (req, res) => {
     });
   }
 });
+
+app.put("/api/users/:id/disabled", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { disabled } = req.body;
+
+    await pool.query(
+      `UPDATE "User"
+       SET disabled = $1,
+           manual_override = TRUE
+       WHERE userid = $2`,
+      [disabled, id]
+    );
+
+    res.json({ message: "User status updated by admin" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to update user status" });
+  }
+});
+
 // Start server
   app.listen(port, () => {
     console.log(`🚀 Server running on http://localhost:${port}`);
