@@ -34,7 +34,7 @@ def fetch_post():
     cursor.execute("""
         SELECT post_id, description, noofupvotes, mappointer, image_file
         FROM posts
-        WHERE status = 'Pending'
+        WHERE counter = 'new'
         LIMIT 1
     """)
 
@@ -81,18 +81,18 @@ def update_location_in_db(post_id, location_name):
 # 🔹 Mark post as processed
 def mark_post_processed(post_id):
     conn = psycopg2.connect(
-        host="localhost",
-        database="postgres",
-        user="postgres",
-        password="root",
-        port="5432"
-    )
+    host=os.getenv("DB_HOST"),
+    database=os.getenv("DB_NAME"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    port=os.getenv("DB_PORT")
+)
 
     cursor = conn.cursor()
 
     cursor.execute("""
         UPDATE posts
-        SET status = 'Processed'
+        SET counter = 'Processed'
         WHERE post_id = %s
     """, (post_id,))
 
@@ -107,7 +107,15 @@ input_data = fetch_post()
 
 # 🔹 Convert mappointer → location name
 location_name = get_location_name(input_data["mappointer"])
-location_name = ", ".join(location_name.split(",")[2:]).strip()
+
+parts = location_name.split(",")
+
+# ⭐ Strip only if address is very long
+if len(parts) > 5:
+    location_name = ", ".join(parts[2:]).strip()
+else:
+    location_name = location_name.strip()
+
 input_data["location"] = location_name
 
 # ✅ Store location in DB
@@ -134,10 +142,12 @@ print(json.dumps(decision, indent=4))
 
 
 # 🔹 Generate PDF
-output_pdf = "reports/civic_issue_report.pdf"
-generate_pdf_report(input_data, decision, output_pdf)
+#output_pdf = f"reports/civic_report_{input_data['post_id']}.pdf"
+#generate_pdf_report(input_data, decision, output_pdf)
+generate_pdf_report(input_data, decision)
 
-print(f"\n📄 PDF report generated successfully at: {output_pdf}")
+#print(f"\n📄 PDF report generated successfully at: {output_pdf}")
+print(f"\n📄 PDF report generated successfully at: reports/civic_report_{input_data['post_id']}.pdf")
 
 
 
