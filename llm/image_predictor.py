@@ -10,7 +10,7 @@ import os
 # Configuration
 # ===============================
 
-model_path = "classification_model.pth"
+model_path = "https://drive.google.com/file/d/1yt_QlS2noTrysk72XQJ5eDdV7WxsRsRr/view?usp=sharing"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # IMPORTANT: must match your training folders
