@@ -193,11 +193,13 @@ export default function AdminDashboard({ setPage }) {
     <th>User ID</th>
     <th>Total Reports</th>
     <th>Status</th>
+    <th>Action</th>
   </tr>
 </thead>
 <tbody>
   {reportedUsers.map((u, index) => (
     <tr key={index}>
+
       {/* USER ID */}
       <td>{u.reported_user_id}</td>
 
@@ -211,30 +213,33 @@ export default function AdminDashboard({ setPage }) {
             Disabled
           </span>
         ) : (
-          <span style={{ color: "green" }}>
+          <span style={{ color: "green", fontWeight: "bold" }}>
             Active
           </span>
         )}
       </td>
 
-      {/* ACTION */}
-      {/* <td>
+      {/* ACTION BUTTON */}
+      <td>
         {u.disabled ? (
           <button
             className="action-btn approve"
-            onClick={() => toggleDisabled(u.reported_user_id, false)}
+            onClick={() => handleEnable(u.reported_user_id)}
+            style={{ backgroundColor: "green" }}
           >
-            Enable
+            Activate
           </button>
         ) : (
           <button
             className="action-btn block"
-            onClick={() => toggleDisabled(u.reported_user_id, true)}
+            onClick={() => handleDisable(u.reported_user_id)}
+            style={{ backgroundColor: "red", color: "white" }}
           >
-            Disable
+            Deactivate
           </button>
         )}
-      </td> */}
+      </td>
+
     </tr>
   ))}
 
