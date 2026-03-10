@@ -1,3 +1,4 @@
+
 import os
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
@@ -6,8 +7,14 @@ from reportlab.lib.units import inch
 from datetime import datetime
 
 
-def generate_pdf_report(input_data, decision_data, output_path):
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+def generate_pdf_report(input_data, decision_data):
+
+    reports_folder = "reports"
+    os.makedirs(reports_folder, exist_ok=True)
+
+    issue_id = input_data["post_id"]
+    output_path = os.path.join(reports_folder, f"civic_report_{issue_id}.pdf")
+
 
     doc = SimpleDocTemplate(
         output_path,
@@ -48,13 +55,21 @@ def generate_pdf_report(input_data, decision_data, output_path):
     elements.append(Paragraph("<b>Complaint Details</b>", styles["Heading2"]))
     elements.append(Spacer(1, 0.1 * inch))
 
+    urgency = input_data["severity_score"]
+    if urgency >= 0.7:
+        urgency_label = "Critical"
+    elif urgency >= 0.4:
+        urgency_label = "Moderate"
+    else:
+        urgency_label = "Minor"
+
     details_text = f"""
     Location: {input_data['location']}<br/>
     Total Upvotes: {input_data['upvotes']}<br/>
     Text Category: {input_data['text_label']}<br/>
     Image Category: {input_data['image_label']}<br/>
     Sentiment: {input_data['sentiment']}<br/>
-    Urgency Score: {input_data['severity_score']}
+    Urgency Score: {input_data['severity_score']} ({urgency_label})
     """
     elements.append(Paragraph(details_text, styles["Normal"]))
     elements.append(Spacer(1, 0.25 * inch))
@@ -62,6 +77,7 @@ def generate_pdf_report(input_data, decision_data, output_path):
     # System Analysis
     elements.append(Paragraph("<b>System Analysis</b>", styles["Heading2"]))
     elements.append(Spacer(1, 0.1 * inch))
+
 
     mismatch_text = (
         "A mismatch was detected between the complaint text and the uploaded image. "
