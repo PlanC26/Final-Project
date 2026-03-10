@@ -8,7 +8,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # ---------------- PATHS ----------------
 MODEL_DIR = "category_model"
-ENCODER_FILE = "label_encoder.pkl"
+ENCODER_FILE = "https://drive.google.com/file/d/1vSpUh7YoNv1__VUrTKCt7_MakMYWE8X1/view?usp=sharing"
 
 # ---------------- LOAD CATEGORY MODEL ----------------
 tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, use_fast=False)
