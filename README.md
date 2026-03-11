@@ -40,4 +40,5 @@ npm start
 ## Notes
 - The large AI model (~1 GB) is kept locally and not tracked by GitHub.
 - Make sure you have enough disk space and a stable internet connection if using the download script.
-- The PDF `AMRUT_MASTER_PLAN_KOZHIKODE.pdf` (~55 MB) is included for reference.
+- The online avaible PDF `AMRUT_MASTER_PLAN_KOZHIKODE.pdf` is included for reference. The project uses a document with more information not share due to confidentiallity
+
