@@ -38,8 +38,9 @@ npm install
 npm start
 
 ## Notes
-- The large AI model (~1 GB) is kept locally and not tracked by GitHub.
+- The large AI model llama 3 by ollama (~1 GB) is kept locally and not tracked by GitHub.
 - Make sure you have enough disk space and a stable internet connection if using the download script.
 - The pubically avaible PDF `AMRUT MASTER PLAN KOZHIKODE VOLUME3 SANCTION_0.pdf` (~1.13 MB) is included for reference in llm folder. The project uses the full AMRUT MASTER PLAN document with more information (~55 MB) not share due to confidentiallity, which was obtained from the city planning office of kozhikode.
+
 
 
